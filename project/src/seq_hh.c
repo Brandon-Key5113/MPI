@@ -74,6 +74,7 @@ int main( int argc, char **argv )
 
   if (!parseArgs( &cmd_args, argc, argv )) {
 	// Something was wrong.
+    printf("Could not parse args.\n")
 	exit(1);
   }
 
