@@ -19,10 +19,10 @@
 # In order for this to send emails, you will need to remove the
 # space between # and SBATCH for the following 2 commands.
 # Specify the recipient of the email
-# SBATCH --mail-user=abc1234@rit.edu
+#SBATCH --mail-user=bxk5113@rit.edu
 
 # Notify on state change: BEGIN, END, FAIL or ALL
-# SBATCH --mail-type=ALL
+#SBATCH --mail-type=ALL
 
 # Multiple options can be used on the same line as shown below.
 # Here, we set the partition, number of cores to use, and the
@@ -41,4 +41,4 @@
 # indicated by the -n option. If these do not, your results will
 # not be valid or you may have wasted resources that others could
 # have used.
-./seq_hh -d 15 -c 10
+./seq_hh -d 15 -c 1000
