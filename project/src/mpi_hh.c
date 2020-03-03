@@ -194,19 +194,22 @@ int main(int argc, char ** argv) {
 
     // Start the clock.
     gettimeofday( & start, NULL);
+  
+  
 
-  } // if (rank == 0)
+        // Initialize the potential of each dendrite compartment to the rest voltage.
+        dendr_volt = (double ** ) malloc(num_dendrs * sizeof(double * ));
+        for (i = 0; i < num_dendrs; i++) {
+        dendr_volt[i] = (double * ) malloc(num_comps * sizeof(double));
+        for (j = 0; j < num_comps; j++) {
+          dendr_volt[i][j] = VREST;
+        }
+        }
+
+    } // if (rank == 0)
+  
   
   //\TODO Probably some sort of barrier
-
-  // Initialize the potential of each dendrite compartment to the rest voltage.
-  dendr_volt = (double ** ) malloc(num_dendrs * sizeof(double * ));
-  for (i = 0; i < num_dendrs; i++) {
-    dendr_volt[i] = (double * ) malloc(num_comps * sizeof(double));
-    for (j = 0; j < num_comps; j++) {
-      dendr_volt[i][j] = VREST;
-    }
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Main computation.
@@ -222,7 +225,10 @@ int main(int argc, char ** argv) {
     for (step = 0; step < STEPS; step++) {
       soma_params[2] = 0.0;
 
-      // Dendrite calculations are 
+      // Dendrite calculations are //
+      // Each process should do n/p dendrites
+      // Figure out how to ensure that rounding doesn't cause errors
+       
       // Loop over all the dendrites.
       for (dendrite = 0; dendrite < num_dendrs; dendrite++) {
         // This will update Vm in all compartments and will give a new injected
