@@ -5,12 +5,15 @@
 
   This is a Hodgkin Huxley (HH) simplified compartamental neuron model
 */
+
 #include "plot.h"
 #include "lib_hh.h"
 #include "cmd_args.h"
 #include "constants.h"
+
 #include <mpi.h>
 #include <time.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -20,16 +23,17 @@
 // ensures that all code is seen by the compiler so there will be no surprises
 // when a flag is/isn't defined. Any modern compiler will compile out any
 // unreachable code.
-#
-ifdef PLOT_SCREEN
-#define ISDEF_PLOT_SCREEN 1#
-else
-#define ISDEF_PLOT_SCREEN 0# endif
+#ifdef PLOT_SCREEN
+  #define ISDEF_PLOT_SCREEN 1
+#else
+  #define ISDEF_PLOT_SCREEN 0
+#endif
 
-# ifdef PLOT_PNG
-#define ISDEF_PLOT_PNG 1#
-else
-#define ISDEF_PLOT_PNG 0# endif
+#ifdef PLOT_PNG
+  #define ISDEF_PLOT_PNG 1
+#else
+  #define ISDEF_PLOT_PNG 0
+#endif
 
 /**
  *Aborts MPI programs.
@@ -38,21 +42,22 @@ else
  */
 void abortHandler(int signal)
 {
+    signal = signal;
     MPI_Abort(MPI_COMM_WORLD, MPI_ERR_UNKNOWN);
-    _exit(1);
+    exit(1);
 }
 
 /**
- *Name: main
+ * Name: main
  *
- *Description:
- *See usage statement (run program with '-h' flag).
+ * Description:
+ * See usage statement (run program with '-h' flag).
  *
- *Parameters:
- *@param argc    number of command line arguments
- *@param argv    command line arguments
- */
-int main(int argc, char **argv)
+ * Parameters:
+ * @param argc    number of command line arguments
+ * @param argv    command line arguments
+*/
+int main( int argc, char **argv )
 {
     CmdArgs cmd_args;	// Command line arguments.
     int num_comps, num_dendrs, tot_dendrs, extr_dends;	// Simulation parameters.
@@ -145,37 +150,33 @@ int main(int argc, char **argv)
        	// don't.
         struct stat stat_buf;
         stat("graphs", &stat_buf);
-        if ((!S_ISDIR(stat_buf.st_mode)) && (mkdir("graphs", 0700) != 0))
-        {
+        if ((!S_ISDIR(stat_buf.st_mode)) && (mkdir("graphs", 0700) != 0)) {
             fprintf(stderr, "Could not create 'graphs' directory!\n");
+            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_UNKNOWN);
             exit(1);
         }
 
         stat("data", &stat_buf);
-        if ((!S_ISDIR(stat_buf.st_mode)) && (mkdir("data", 0700) != 0))
-        {
+        if ((!S_ISDIR(stat_buf.st_mode)) && (mkdir("data", 0700) != 0)) {
             fprintf(stderr, "Could not create 'data' directory!\n");
+            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_UNKNOWN);
             exit(1);
         }
 
        	// Verify that we can open files where results will be stored.
-        if ((data_file = fopen(data_fname, "wb")) == NULL)
-        {
+        if ((data_file = fopen(data_fname, "wb")) == NULL){
             fprintf(stderr, "Can't open %s file!\n", data_fname);
+            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_UNKNOWN);
             exit(1);
-        }
-        else
-        {
+        } else {
             printf("\nData will be stored in %s\n", data_fname);
         }
 
-        if (ISDEF_PLOT_PNG && (graph_file = fopen(graph_fname, "wb")) == NULL)
-        {
+        if (ISDEF_PLOT_PNG && (graph_file = fopen(graph_fname, "wb")) == NULL) {
             fprintf(stderr, "Can't open %s file!\n", graph_fname);
+            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_UNKNOWN);
             exit(1);
-        }
-        else
-        {
+        } else {
             printf("Graph will be stored in %s\n", graph_fname);
             fclose(graph_file);
         }
@@ -208,31 +209,34 @@ int main(int argc, char **argv)
     soma_params[2] = 0.0;	// Dendritic current injected into soma. This is the
     // value that our simulation will update at each step.
 
+    // Initialize the potential of each dendrite compartment to the rest voltage.
+    dendr_volt = (double**) malloc( num_dendrs * sizeof(double*) );
+    for (i = 0; i < num_dendrs; i++) {
+        dendr_volt[i] = (double*) malloc( num_comps * sizeof(double) );
+        for (j = 0; j < num_comps; j++) {
+            dendr_volt[i][j] = VREST;
+        }
+    }
 
    	//////////////////////////////////////////////////////////////////////////////
    	// Main computation.
    	//////////////////////////////////////////////////////////////////////////////
 
    	// Record the initial potential value in our results array.
-    // TODO figure out what this needs to be
     res[0] = y[0];
 
    	// Loop over milliseconds.
-    for (t_ms = 1; t_ms < COMPTIME; t_ms++)
-    {
+    for (t_ms = 1; t_ms < COMPTIME; t_ms++) {
 
        	// Loop over integration time steps in each millisecond.
-        for (step = 0; step < STEPS; step++)
-        {
+        for (step = 0; step < STEPS; step++) {
             soma_params[2] = 0.0;
 
            	// Dendrite calculations are	//
            	// Each process should do n/p dendrites
-           	// Figure out how to ensure that rounding doesn't cause errors
 
            	// Loop over all the dendrites.
-            for (dendrite = 0; dendrite < num_dendrs; dendrite++)
-            {
+            for (dendrite = 0; dendrite < num_dendrs; dendrite++) {
                	// This will update Vm in all compartments and will give a new injected
                	// current value from last compartment into the soma.
                 current = dendriteStep(dendr_volt[dendrite],
@@ -241,17 +245,29 @@ int main(int argc, char **argv)
                     soma_params[0],
                     y[0]);
 
+                // TODO implement using send/recieve
                	// Use MPI Gather
                	// Accumulate the current generated by the dendrite.
                	//int MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
-               	//int MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype,   MPI_SUM,        0, MPI_COMM_WORLD)
-                soma_params[2] += current;
+                MPI_Reduce(&current, &soma_params[2], 1, MPI_DOUBLE,   MPI_SUM, 0, MPI_COMM_WORLD);
+                //soma_params[2] += current;
             }
             
 
             if (rank == 0){
                 
                 // TODO extra work for the mod
+                for (/*Continue previous loop*/; dendrite < extr_dends; dendrite++)
+                {
+                    // This will update Vm in all compartments and will give a new injected
+                    // current value from last compartment into the soma.
+                    current = dendriteStep(dendr_volt[dendrite],
+                        step + dendrite + 1,
+                        num_comps,
+                        soma_params[0],
+                        y[0]);
+                    soma_params[2] += current;
+                }
                 
                 
                 // Store previous HH model parameters.
@@ -262,21 +278,21 @@ int main(int argc, char **argv)
 
                 // This is the main HH computation. It updates the potential, Vm, of the
                 // soma, injects current, and calculates action potential. Good stuff.
-                soma(dydt, y, soma_params);	// This may be able to be parallelized. Doesn't depend on other itterations.
+                soma(dydt, y, soma_params);
                 rk4Step(y, y0, dydt, NUMVAR, soma_params, 1, soma);
                 for (int i = 0; i < numtasks; i++){
                     // send
-                    
-                    MPI_Send( &outmsg, 1, MPI_CHAR, dest, tag, MPI_COMM_WORLD );
+                    MPI_Send( &y, NUMVAR, MPI_DOUBLE, i, 'y', MPI_COMM_WORLD);
+                    MPI_Send( &soma_params, 3, MPI_DOUBLE, i, 's', MPI_COMM_WORLD);
                 }
                 
             } else {
                 // !rank 0
                 //recieve
-                MPI_Recv( &inmsg, 1, MPI_CHAR, source, tag, MPI_COMM_WORLD, &stat );
+                MPI_Recv( &y, NUMVAR, MPI_DOUBLE, 0, 'y', MPI_COMM_WORLD, &status);
+                MPI_Recv( &soma_params, 3, MPI_DOUBLE, 0, 's', MPI_COMM_WORLD, &status);
             }
             
-            // bcast y, y0, soma_params
         }
 
         if (rank == 0){
@@ -292,9 +308,9 @@ int main(int argc, char **argv)
    	//////////////////////////////////////////////////////////////////////////////
    	// Report results of computation.
    	//////////////////////////////////////////////////////////////////////////////
+
    	// Only the head needs to do this once.
-    if (rank == 0)
-    {
+    if (rank == 0) {
        	// Stop the clock, compute how long the program was running and report that
        	// time.
         gettimeofday(&stop, NULL);
@@ -312,8 +328,7 @@ int main(int argc, char **argv)
             0);
         fprintf(data_file, "# X Y\n");
 
-        for (t_ms = 0; t_ms < COMPTIME; t_ms++)
-        {
+        for (t_ms = 0; t_ms < COMPTIME; t_ms++) {
             fprintf(data_file, "%d %f\n", t_ms, res[t_ms]);
         }
         fflush(data_file);	// Flush and close the data file so that gnuplot will
@@ -322,8 +337,7 @@ int main(int argc, char **argv)
        	//////////////////////////////////////////////////////////////////////////////
        	// Plot results if approriate macro was defined.
        	//////////////////////////////////////////////////////////////////////////////
-        if (ISDEF_PLOT_PNG || ISDEF_PLOT_SCREEN)
-        {
+        if (ISDEF_PLOT_PNG || ISDEF_PLOT_SCREEN) {
             pinfo.sim_time = COMPTIME;
             pinfo.int_step = soma_params[0];
             pinfo.num_comps = num_comps - 2;
@@ -332,12 +346,10 @@ int main(int argc, char **argv)
             pinfo.slaves = 0;
         }
 
-        if (ISDEF_PLOT_PNG)
-        {
+        if (ISDEF_PLOT_PNG) {
             plotData(&pinfo, data_fname, graph_fname);
         }
-        if (ISDEF_PLOT_SCREEN)
-        {
+        if (ISDEF_PLOT_SCREEN){
             plotData(&pinfo, data_fname, NULL);
         }
 
@@ -347,8 +359,7 @@ int main(int argc, char **argv)
     // Free up allocated memory.
     //////////////////////////////////////////////////////////////////////////////
 
-    for (i = 0; i < num_dendrs; i++)
-    {
+    for (i = 0; i < num_dendrs; i++){
         free(dendr_volt[i]);
     }
     free(dendr_volt);

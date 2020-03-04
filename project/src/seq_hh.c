@@ -197,7 +197,10 @@ int main( int argc, char **argv )
 	  }
 
 	  // Store previous HH model parameters.
-	  y0[0] = y[0]; y0[1] = y[1]; y0[2] = y[2]; y0[3] = y[3];
+	  y0[0] = y[0]; 
+      y0[1] = y[1];
+      y0[2] = y[2]; 
+      y0[3] = y[3];
 
 	  // This is the main HH computation. It updates the potential, Vm, of the
 	  // soma, injects current, and calculates action potential. Good stuff.
@@ -207,7 +210,8 @@ int main( int argc, char **argv )
 
 	// Record the membrane potential of the soma at this simulation step.
 	// Let's show where we are in terms of computation.
-	printf("\r%02d ms",t_ms); fflush(stdout);
+	printf("\r%02d ms",t_ms); 
+    fflush(stdout);
 
 	res[t_ms] = y[0];
   }
@@ -251,8 +255,12 @@ int main( int argc, char **argv )
 	pinfo.slaves = 0;
   }
 
-  if (ISDEF_PLOT_PNG) {    plotData( &pinfo, data_fname, graph_fname ); }
-  if (ISDEF_PLOT_SCREEN) { plotData( &pinfo, data_fname, NULL ); }
+  if (ISDEF_PLOT_PNG) {    
+    plotData( &pinfo, data_fname, graph_fname ); 
+  }
+  if (ISDEF_PLOT_SCREEN) { 
+    plotData( &pinfo, data_fname, NULL ); 
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Free up allocated memory.
