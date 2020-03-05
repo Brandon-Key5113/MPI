@@ -187,6 +187,8 @@ int main( int argc, char **argv )
        	// Start the clock.
         gettimeofday(&start, NULL);
 
+        printf("Time of day fetched\n");
+        fflush(stdout);
        	
     }	// if (rank == 0)
     
@@ -208,6 +210,12 @@ int main( int argc, char **argv )
     soma_params[1] = 0.0;	// Direct current injection into soma is always zero.
     soma_params[2] = 0.0;	// Dendritic current injected into soma. This is the
     // value that our simulation will update at each step.
+    
+    if (rank == 0){
+        printf("\nStart of memory init\n");
+        fflush(stdout);
+    }
+    
 
     // Initialize the potential of each dendrite compartment to the rest voltage.
     dendr_volt = (double**) malloc( num_dendrs * sizeof(double*) );
@@ -217,6 +225,16 @@ int main( int argc, char **argv )
             dendr_volt[i][j] = VREST;
         }
     }
+    
+    // extra init for rank 0
+    if (rank == 0){
+        for (/*Continue previous loop*/; i < num_dendrs+extr_dends; i++) {
+            dendr_volt[i] = (double*) malloc( num_comps * sizeof(double) );
+            for (j = 0; j < num_comps; j++) {
+                dendr_volt[i][j] = VREST;
+            }
+        }
+    }
 
    	//////////////////////////////////////////////////////////////////////////////
    	// Main computation.
@@ -224,6 +242,11 @@ int main( int argc, char **argv )
 
    	// Record the initial potential value in our results array.
     res[0] = y[0];
+    
+    if (rank == 0){
+        printf("End of memory init\n");
+        fflush(stdout);
+    }
 
    	// Loop over milliseconds.
     for (t_ms = 1; t_ms < COMPTIME; t_ms++) {
@@ -239,11 +262,23 @@ int main( int argc, char **argv )
             for (dendrite = 0; dendrite < num_dendrs; dendrite++) {
                	// This will update Vm in all compartments and will give a new injected
                	// current value from last compartment into the soma.
+                
+                if (rank == 0){
+                    printf("D: %d\n", dendrite);
+                    fflush(stdout);
+                }
+                
                 current = dendriteStep(dendr_volt[dendrite],
                     step + dendrite + 1,
                     num_comps,
                     soma_params[0],
                     y[0]);
+                    
+                    
+                if (rank == 0){
+                    printf("C: %d\n", dendrite);
+                    fflush(stdout);
+                }
 
                 // TODO implement using send/recieve
                	// Use MPI Gather
@@ -253,11 +288,15 @@ int main( int argc, char **argv )
                 //soma_params[2] += current;
             }
             
+            if (rank == 0){
+                printf("Blah\n");
+                fflush(stdout);
+            }
 
             if (rank == 0){
                 
                 // TODO extra work for the mod
-                for (/*Continue previous loop*/; dendrite < extr_dends; dendrite++)
+                for (/*Continue previous loop*/; dendrite < num_dendrs+extr_dends; dendrite++)
                 {
                     // This will update Vm in all compartments and will give a new injected
                     // current value from last compartment into the soma.

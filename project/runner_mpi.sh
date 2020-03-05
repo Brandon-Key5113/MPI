@@ -28,7 +28,7 @@
 
 # Multiple options can be used on the same line as shown below.
 # Here, we set the partition and the number of cores to use.
-#SBATCH -p kgcoe-mps -n 6
+#SBATCH -p kgcoe-mps -n 10
 
 #
 # Your job script goes below this line.
@@ -38,7 +38,8 @@
 # then you MUST provide this line...it tells the node(s)
 # that you want to use this implementation of MPI. If you
 # omit this line, your results will indicate failure.
-module load openmpi-1.10-x86_64
+# module load openmpi-1.10-x86_64
+module load openmpi
 
 # Place your srun command here
 # Notice that you have to provide the number of processes that
@@ -46,4 +47,4 @@ module load openmpi-1.10-x86_64
 # indicated by the -n option. If these do not, your results will
 # not be valid or you may have wasted resources that others could
 # have used.
-srun -n $SLURM_NPROCS mpi_hh -d 15 -c 10
+srun -n 10 mpi_hh -d 15 -c 10
