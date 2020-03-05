@@ -212,7 +212,11 @@ int main( int argc, char **argv )
     // value that our simulation will update at each step.
     
     if (rank == 0){
-        printf("\nStart of memory init\n");
+        printf("numtasks %d \n", numtasks);
+        printf("NumDen %d \n", num_dendrs);
+        printf("totDen %d \n", tot_dendrs);
+        printf("extrDen %d \n", extr_dends);
+        printf("Start of memory init\n");
         fflush(stdout);
     }
     
@@ -265,6 +269,14 @@ int main( int argc, char **argv )
                 
                 if (rank == 0){
                     printf("D: %d\n", dendrite);
+                    fflush(stdout);
+                    printf("Volty: %f\n", dendr_volt[dendrite]);
+                    fflush(stdout);
+                    printf("2y: %d\n", step + dendrite + 1);
+                    fflush(stdout);
+                    printf("soma: %f\n", soma_params[0]);
+                    fflush(stdout);
+                    printf("y: %f\n", y[0]);
                     fflush(stdout);
                 }
                 

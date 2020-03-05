@@ -21,6 +21,7 @@
 #include <math.h>
 #include <float.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // Parameters for cell of 20,000 micometer surface area (2e-4 cm^2)
 #define gL  10      // Leak soma conductance, nS
@@ -46,17 +47,23 @@ double dendriteStep( double *v_d, int seed, int num_comps, double delta_t,
   paramD[0] = delta_t;
 
   srand(seed);
+  
+  printf("Let me here you say ah oh\n");
+  fflush(stdout);
 
   // Current injected at the tip of the dendrite
   cur = INJCURMEAN + INJCURMEAN*0.1 -
         2*INJCURMEAN*0.1*((double)rand()/((double)RAND_MAX));
   // Update somatic potential = potential of the last compartment
   v_d[num_comps-1] = v_m;
+  
+  printf("ay oh\n");
+  fflush(stdout);
 
   // Loop over compartments
   for( i=0; i < num_comps-2; i++ )
   {/*This loop computes lateral dVm for 1st interation in RK4*/
-
+    fflush(stdout);
     if( i == 0 )
     {// First compartment: inject current, doesn't have resistance from the left
       paramD[1] = cur;
@@ -74,6 +81,9 @@ double dendriteStep( double *v_d, int seed, int num_comps, double delta_t,
     paramD[5]=  v_d[i+2];
     dendrite((vddt+i),(v_d+i+1),paramD);
   }
+
+    printf("Boom boom boom\n");
+    fflush(stdout);
 
   // Loop over compartments
   for( i=0; i < num_comps-2; i++ )
@@ -94,7 +104,12 @@ double dendriteStep( double *v_d, int seed, int num_comps, double delta_t,
     paramD[4]= v_d[i];
     paramD[5]=  v_d[i+2];
     temp[0]=v_d[i+1];
+    
+    printf("i oh %d\n", i);
+    fflush(stdout);
     rk4Step((v_d+i+1),temp,(vddt+i),1,paramD,1,dendrite);
+    printf("a oh %d\n", i);
+    fflush(stdout);
   }
   // Calculate current injected by this dendrite into soma
   current = paramD[3]*(v_d[i] - v_m);

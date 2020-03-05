@@ -27,17 +27,12 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=8
-FILE_NAME_0=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fcmd_args.c;0;4
-FILE_NAME_1=3804;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Flib_hh.c;0;4
-FILE_NAME_2=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fplot.c;0;4
-FILE_NAME_3=5191;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fseq_hh.c;0;4
-FILE_NAME_4=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fcmd_args.h;0;4
-FILE_NAME_5=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fconstants.h;0;4
-FILE_NAME_6=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Flib_hh.h;0;4
-FILE_NAME_7=1003;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fplot.h;0;4
-FILE_NAME_8=7427;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fmpi_hh.c;0;4
-FILE_NAME_9=1386;Sh;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Frunner_mpi.sh;0;4
+current_page=1
+FILE_NAME_0=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPI%2Fproject%2Fsrc%2Fseq_hh.c;0;4
+FILE_NAME_1=9639;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPI%2Fproject%2Fsrc%2Fmpi_hh.c;0;4
+FILE_NAME_2=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPI%2Fproject%2Fsrc%2Fplot.c;0;4
+FILE_NAME_3=3815;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPI%2Fproject%2Fsrc%2Flib_hh.c;0;4
+FILE_NAME_4=292;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPI%2Fproject%2Fsrc%2Fcmd_args.c;0;4
 
 [VTE]
 last_dir=/home/brandon
