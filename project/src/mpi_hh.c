@@ -119,6 +119,10 @@ int main( int argc, char **argv )
     tot_dendrs = cmd_args.num_dendrs;
     num_dendrs = tot_dendrs/numtasks;
     extr_dends = tot_dendrs - num_dendrs*numtasks; // remainder from int division
+    if (rank < extr_dends){
+        // distribute extra dendrites to the lowest n procs
+        num_dendrs++;
+    }
     num_comps = cmd_args.num_comps;
 
     if (rank == 0)
@@ -229,16 +233,6 @@ int main( int argc, char **argv )
             dendr_volt[i][j] = VREST;
         }
     }
-    
-    // extra init for rank 0
-    if (rank == 0){
-        for (/*Continue previous loop*/; i < num_dendrs+extr_dends; i++) {
-            dendr_volt[i] = (double*) malloc( num_comps * sizeof(double) );
-            for (j = 0; j < num_comps; j++) {
-                dendr_volt[i][j] = VREST;
-            }
-        }
-    }
 
    	//////////////////////////////////////////////////////////////////////////////
    	// Main computation.
@@ -306,20 +300,6 @@ int main( int argc, char **argv )
             }
 
             if (rank == 0){
-                
-                // TODO extra work for the mod
-                for (/*Continue previous loop*/; dendrite < num_dendrs+extr_dends; dendrite++)
-                {
-                    // This will update Vm in all compartments and will give a new injected
-                    // current value from last compartment into the soma.
-                    current = dendriteStep(dendr_volt[dendrite],
-                        step + dendrite + 1,
-                        num_comps,
-                        soma_params[0],
-                        y[0]);
-                    soma_params[2] += current;
-                }
-                
                 
                 // Store previous HH model parameters.
                 y0[0] = y[0];
