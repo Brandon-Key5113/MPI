@@ -57,7 +57,6 @@ double dendriteStep( double *v_d, int seed, int num_comps, double delta_t,
   // Loop over compartments
   for( i=0; i < num_comps-2; i++ )
   {/*This loop computes lateral dVm for 1st interation in RK4*/
-    fflush(stdout);
     if( i == 0 )
     {// First compartment: inject current, doesn't have resistance from the left
       paramD[1] = cur;
@@ -145,7 +144,10 @@ void rk4Step( double *y, double *y0, double *dydt0, int nv, double *fp,
       y[i] = y0[i] + dt6*(rk1[i]+dydt[i]+2*(rk2[i]+rk3[i]));
     }
 
-    free(rk1); free(rk2); free(rk3); free(dydt);
+    free(rk1); 
+    free(rk2); 
+    free(rk3); 
+    free(dydt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
