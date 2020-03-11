@@ -27,7 +27,16 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
+current_page=2
+FILE_NAME_0=6981;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fseq_hh.c;0;4
+FILE_NAME_1=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fplot.c;0;4
+FILE_NAME_2=3678;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fmpi_hh.c;0;4
+FILE_NAME_3=4769;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Flib_hh.c;0;4
+FILE_NAME_4=0;C;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Fsrc%2Fcmd_args.c;0;4
+FILE_NAME_5=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fcmd_args.h;0;4
+FILE_NAME_6=105;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fconstants.h;0;4
+FILE_NAME_7=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Flib_hh.h;0;4
+FILE_NAME_8=111;C++;0;EUTF-8;0;1;0;%2Fhome%2Fbrandon%2FDocuments%2FMPS%2FMPI%2Fproject%2Finclude%2Fplot.h;0;4
 
 [VTE]
 last_dir=/home/brandon
